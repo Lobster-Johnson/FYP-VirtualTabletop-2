@@ -17,7 +17,7 @@ public class Creature : NetworkBehaviour
 
     //placeholder movespeed and bool to prevent movement
     float movespeed = 1;
-    public bool InUse = false;
+    public bool InUse = true;
 
     // Use this for initialization
     void Start ()
@@ -25,6 +25,7 @@ public class Creature : NetworkBehaviour
         //connect it to it's map
         GameObject[] Map = GameObject.FindGameObjectsWithTag("MainMap");
         wmap = Map[0].GetComponent<TileMap>();
+        transform.position = new Vector3(tileX, tileY, -0.5f);
     }
 	
 	// Update is called once per frame
@@ -72,6 +73,7 @@ public class Creature : NetworkBehaviour
     //based on the creatures path, move it to this tile
     public void MoveNextTile()
     {
+        Debug.Log("Movement command");
         if (InUse)
         {
             float remainingmovespeed = movespeed;
@@ -89,7 +91,7 @@ public class Creature : NetworkBehaviour
                 tileX = currentPath[0].x;
                 tileY = currentPath[0].y;
                 transform.position = wmap.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y);
-                transform.position += new Vector3(0, 0, 0);
+                transform.position += new Vector3(0, 0, -0.5f);
 
                 remainingmovespeed--;
 

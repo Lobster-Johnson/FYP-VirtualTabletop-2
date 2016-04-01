@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CameraControls : MonoBehaviour {
+public class CameraControls : MonoBehaviour
+{
     public KeyCode forward;
     public KeyCode left;
     public KeyCode right;

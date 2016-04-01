@@ -55,6 +55,12 @@ public class TileMap : MonoBehaviour
         tiles[8, 9] = 1;
         tiles[9, 8] = 1;
         tiles[8, 8] = 1;
+        tiles[9, 3] = 1;
+        tiles[8, 3] = 1;
+        tiles[7, 3] = 1;
+        tiles[9, 2] = 1;
+        tiles[8, 2] = 1;
+        tiles[7, 2] = 1;
         Debug.Log("Map Data Generated");
     }
 
