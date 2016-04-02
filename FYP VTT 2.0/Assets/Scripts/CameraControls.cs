@@ -72,7 +72,7 @@ public class CameraControls : MonoBehaviour
                 float positionX = (delta.x * movesensitivityX * Time.deltaTime) * -1;
                 float positionY = (delta.y * movesensitivityY * Time.deltaTime) * -1;
 
-                transform.position += new Vector3(positionX, positionY, -1);
+                transform.position += new Vector3(-positionX, positionY, 0);
             }
             if (Input.GetTouch(0).phase == TouchPhase.Ended)
             {

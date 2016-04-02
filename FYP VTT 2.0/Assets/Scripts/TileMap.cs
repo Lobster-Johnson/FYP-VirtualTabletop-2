@@ -8,6 +8,8 @@ public class TileMap : MonoBehaviour
     int[,] tiles;
 
     public GameObject[] Current;
+    //tie the movebutton to the map
+    public GameObject movebutton;
 
     int mapsizeX = 10;
     int mapsizeY = 10;
@@ -179,6 +181,7 @@ public class TileMap : MonoBehaviour
     public void Destination(int x, int y)
     {
         //find who's turn it currently is
+        //currently set to only find the player
         Current = GameObject.FindGameObjectsWithTag("Player");
 
         if(Current.Length == 0)
@@ -186,6 +189,9 @@ public class TileMap : MonoBehaviour
             Debug.Log("ERROR no current player");
             return;
         }
+
+        //send this guy who's turn it is to the move button (possibly all buttons?)
+        movebutton.GetComponent<MoveButton>().newMover(Current[0]);
 
         //clear out preexisting path
         Current[0].GetComponent<Creature>().currentPath = null;

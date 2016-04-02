@@ -17,7 +17,7 @@ public class Creature : NetworkBehaviour
 
     //placeholder movespeed and bool to prevent movement
     float movespeed = 1;
-    public bool InUse = true;
+    //public bool InUse = true;
 
     // Use this for initialization
     void Start ()
@@ -73,9 +73,9 @@ public class Creature : NetworkBehaviour
     //based on the creatures path, move it to this tile
     public void MoveNextTile()
     {
-        Debug.Log("Movement command");
-        if (InUse)
-        {
+        Debug.Log("Movement command recieved");
+        //if (InUse)
+        //{
             float remainingmovespeed = movespeed;
             while (remainingmovespeed > 0)
             {
@@ -102,6 +102,6 @@ public class Creature : NetworkBehaviour
                     currentPath = null;
                 }
             }
-        }
+        //}
     }
 }
