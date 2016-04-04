@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Networking;
 
 public class TileMap : MonoBehaviour
 {
@@ -189,101 +190,109 @@ public class TileMap : MonoBehaviour
             Debug.Log("ERROR no current player");
             return;
         }
-
-        //send this guy who's turn it is to the move button (possibly all buttons?)
-        movebutton.GetComponent<MoveButton>().newMover(Current[0]);
-
-        //clear out preexisting path
-        Current[0].GetComponent<Creature>().currentPath = null;
-
-
-        //warning: following algorithm isn't the right one. Replace with A*
-        Dictionary<Node, float> dist = new Dictionary<Node, float>();
-        Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
-
-        List<Node> unvisited = new List<Node>();
-
-        //where you start
-        Node source = graph[
-                            Current[0].GetComponent<Creature>().tileX,
-                            Current[0].GetComponent<Creature>().tileY
-                            ];
-
-        //where you want to go
-        Node target = graph[
-                            x,
-                            y
-                            ];
-
-        dist[source] = 0;
-        prev[source] = null;
-
-        foreach (Node v in graph)
+        foreach (GameObject Entity in Current)
         {
-            if (v != source)
+            if(Entity.GetComponent<Creature>().MyTurn)
             {
-                dist[v] = Mathf.Infinity;
-                prev[v] = null;
-            }
-            unvisited.Add(v);
-        }
+                Debug.Log("Got one");
+                //send this guy who's turn it is to the move button (possibly all buttons?)
+                //mave move this to the turn manager.
+                movebutton.GetComponent<MoveButton>().newMover(Entity);
 
-        //while there's still nodes to visit
-        while (unvisited.Count > 0)
-        {
-            //Node u = unvisited.OrderBy(n => dist[n]).First();
+                //clear out preexisting path
+                Entity.GetComponent<Creature>().currentPath = null;
 
-            Node u = null;
 
-            foreach (Node PossibleU in unvisited)
-            {
-                if (u == null || dist[PossibleU] < dist[u])
+                //warning: following algorithm isn't the right one. Replace with A*
+                Dictionary<Node, float> dist = new Dictionary<Node, float>();
+                Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
+
+                List<Node> unvisited = new List<Node>();
+
+                //where you start
+                Node source = graph[
+                                    Entity.GetComponent<Creature>().tileX,
+                                    Entity.GetComponent<Creature>().tileY
+                                    ];
+
+                //where you want to go
+                Node target = graph[
+                                    x,
+                                    y
+                                    ];
+
+                dist[source] = 0;
+                prev[source] = null;
+
+                foreach (Node v in graph)
                 {
-                    u = PossibleU;
+                    if (v != source)
+                    {
+                        dist[v] = Mathf.Infinity;
+                        prev[v] = null;
+                    }
+                    unvisited.Add(v);
                 }
-            }
 
-            if (u == target)
-            {
-                break;
-            }
-
-
-            unvisited.Remove(u);
-
-            foreach (Node v in u.neighbours)
-            {
-                float alt = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
-                if (alt < dist[v])
+                //while there's still nodes to visit
+                while (unvisited.Count > 0)
                 {
-                    dist[v] = alt;
-                    prev[v] = u;
+                    //Node u = unvisited.OrderBy(n => dist[n]).First();
+
+                    Node u = null;
+
+                    foreach (Node PossibleU in unvisited)
+                    {
+                        if (u == null || dist[PossibleU] < dist[u])
+                        {
+                            u = PossibleU;
+                        }
+                    }
+
+                    if (u == target)
+                    {
+                        break;
+                    }
+
+
+                    unvisited.Remove(u);
+
+                    foreach (Node v in u.neighbours)
+                    {
+                        float alt = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
+                        if (alt < dist[v])
+                        {
+                            dist[v] = alt;
+                            prev[v] = u;
+                        }
+                    }
                 }
+
+                //here indicates we have either found the shortest route or there is no route
+                if (prev[target] == null)
+                {
+                    //no route between target and source
+                    return;
+                }
+
+                //construct path
+                currentPath = new List<Node>();
+
+                Node curr = target;
+
+                //go back through the prev chain and add to path
+                while (curr != null)
+                {
+                    currentPath.Add(curr);
+                    curr = prev[curr];
+                }
+
+                //invert path
+                currentPath.Reverse();
+
+                Entity.GetComponent<Creature>().currentPath = currentPath;
             }
         }
-
-        //here indicates we have either found the shortest route or there is no route
-        if (prev[target] == null)
-        {
-            //no route between target and source
-            return;
-        }
-
-        //construct path
-        currentPath = new List<Node>();
-
-        Node curr = target;
-
-        //go back through the prev chain and add to path
-        while (curr != null)
-        {
-            currentPath.Add(curr);
-            curr = prev[curr];
-        }
-
-        //invert path
-        currentPath.Reverse();
-
-        Current[0].GetComponent<Creature>().currentPath = currentPath;
+        
     }
 }

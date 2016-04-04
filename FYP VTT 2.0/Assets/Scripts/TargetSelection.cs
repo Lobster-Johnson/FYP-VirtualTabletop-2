@@ -6,7 +6,7 @@ public class TargetSelection : MonoBehaviour {
     //Select target
     void OnMouseUp()
     {
-        Debug.Log("Target Selected");
+        Debug.Log("Target Selected " + this.gameObject.tag);
         
 
     }

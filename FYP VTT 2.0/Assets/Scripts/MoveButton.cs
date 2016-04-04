@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
-public class MoveButton : MonoBehaviour {
+public class MoveButton : NetworkBehaviour
+{
 
     public GameObject currentMover;
     
@@ -20,6 +22,6 @@ public class MoveButton : MonoBehaviour {
             return;
         }
         Debug.Log("MOVE COMMAND INITIATED");
-        currentMover.GetComponent<Creature>().MoveNextTile();
+        currentMover.GetComponent<Creature>().CmdMoveNextTile();
     }
 }
