@@ -11,6 +11,7 @@ public class MoveButton : NetworkBehaviour
     //when the map sends a destination to a creature it sends that creature to the move button
     public void newMover(GameObject next)
     {
+        currentMover = null;
         currentMover = next;
     }
 	
@@ -18,7 +19,7 @@ public class MoveButton : NetworkBehaviour
     {
         if (currentMover == null)
         {
-            Debug.Log("No one here");
+            Debug.Log("No one here to command");
             return;
         }
         Debug.Log("MOVE COMMAND INITIATED");

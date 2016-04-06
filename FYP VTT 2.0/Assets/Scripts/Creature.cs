@@ -25,7 +25,10 @@ public class Creature : NetworkBehaviour
 
     //placeholder movespeed and bool to prevent movement
     float movespeed = 1;
+
+    //turn management bools
     public bool MyTurn = true;
+    public bool TurnFinished = false;
 
     void Awake()
     {
@@ -137,8 +140,21 @@ public class Creature : NetworkBehaviour
         //}
     }
 
+    //command to end the creatures turn
+    public void EndTurn()
+    {
+        if (MyTurn)
+        {
+            Debug.Log("End turn command recieved");
+            MyTurn = false;
+            currentPath = null;
+            TurnFinished = true;
+        }
 
-    //the following 3 functions are to move it on the server side. That is, when a local player moves a creature, it updates on everyone else's screen
+    }
+
+    //the following 3 functions are to move it on the server side. 
+    //That is, when a local player moves a creature, it updates on everyone else's screen
     [Command]
     void CmdNewServerPos(int x, int y)
     {
@@ -160,4 +176,6 @@ public class Creature : NetworkBehaviour
         transform.position = serverState.stilex * Vector3.right + serverState.stiley * Vector3.up;
         Debug.Log("Server updated, Co-ordinates: " + serverState.stilex + " " + serverState.stiley);
     }
+
+    
 }

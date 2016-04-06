@@ -9,8 +9,6 @@ public class TileMap : MonoBehaviour
     int[,] tiles;
 
     public GameObject[] Current;
-    //tie the movebutton to the map
-    public GameObject movebutton;
 
     int mapsizeX = 10;
     int mapsizeY = 10;
@@ -181,6 +179,8 @@ public class TileMap : MonoBehaviour
     //path creature to this location
     public void Destination(int x, int y)
     {
+        Current = null;
+
         //find who's turn it currently is
         //currently set to only find the player
         Current = GameObject.FindGameObjectsWithTag("Player");
@@ -190,14 +190,13 @@ public class TileMap : MonoBehaviour
             Debug.Log("ERROR no current player");
             return;
         }
+
+        //go through all the game objects to see who has the myturn bool ticked
         foreach (GameObject Entity in Current)
         {
             if(Entity.GetComponent<Creature>().MyTurn)
             {
                 Debug.Log("Got one");
-                //send this guy who's turn it is to the move button (possibly all buttons?)
-                //mave move this to the turn manager.
-                movebutton.GetComponent<MoveButton>().newMover(Entity);
 
                 //clear out preexisting path
                 Entity.GetComponent<Creature>().currentPath = null;
