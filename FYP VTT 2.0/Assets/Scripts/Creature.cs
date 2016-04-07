@@ -106,8 +106,8 @@ public class Creature : NetworkBehaviour
     public void CmdMoveNextTile()
     {
         Debug.Log("Movement command recieved");
-        //if (isLocalPlayer)
-        //{
+        if (isLocalPlayer)
+        {
             float remainingmovespeed = movespeed;
             while (remainingmovespeed > 0)
             {
@@ -137,13 +137,13 @@ public class Creature : NetworkBehaviour
                     currentPath = null;
                 }
             }
-        //}
+        }
     }
 
     //command to end the creatures turn
     public void EndTurn()
     {
-        if (MyTurn)
+        if (MyTurn && isLocalPlayer)
         {
             Debug.Log("End turn command recieved");
             MyTurn = false;
@@ -174,7 +174,7 @@ public class Creature : NetworkBehaviour
     void UpdateOnServer()
     {
         transform.position = serverState.stilex * Vector3.right + serverState.stiley * Vector3.up;
-        Debug.Log("Server updated, Co-ordinates: " + serverState.stilex + " " + serverState.stiley);
+        //Debug.Log("Server updated, Co-ordinates: " + serverState.stilex + " " + serverState.stiley);
     }
 
     

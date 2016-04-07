@@ -5,16 +5,21 @@ using UnityEngine.Networking;
 
 public class TileMap : MonoBehaviour
 {
+    //tile info
     public TileType[] tileTypes;
     int[,] tiles;
+    
+    public GameObject creature;
 
-    public GameObject[] Current;
-
+    //map size
     int mapsizeX = 10;
     int mapsizeY = 10;
 
+    //graph and nodes
     List<Node> currentPath = null;
     Node[,] graph;
+
+
     // Use this for initialization
     void Start ()
     {
@@ -173,65 +178,60 @@ public class TileMap : MonoBehaviour
     }
 
 
-
+    //get passed in a creature from the turn manager
+    public void LoadInCreature(GameObject cr)
+    {
+        creature = null;
+        creature = cr;
+    }
 
     //pathfinding
     //path creature to this location
     public void Destination(int x, int y)
     {
-        Current = null;
-
-        //find who's turn it currently is
-        //currently set to only find the player
-        Current = GameObject.FindGameObjectsWithTag("Player");
-
-        if(Current.Length == 0)
+        //if it's no one's turn
+        if(creature == null)
         {
-            Debug.Log("ERROR no current player");
+            Debug.Log("ERROR no current player*");
             return;
         }
 
-        //go through all the game objects to see who has the myturn bool ticked
-        foreach (GameObject Entity in Current)
-        {
-            if(Entity.GetComponent<Creature>().MyTurn)
-            {
-                Debug.Log("Got one");
+        Debug.Log("Got one");
 
-                //clear out preexisting path
-                Entity.GetComponent<Creature>().currentPath = null;
+        //clear out preexisting path
+        creature.GetComponent<Creature>().currentPath = null;
 
 
-                //warning: following algorithm isn't the right one. Replace with A*
-                Dictionary<Node, float> dist = new Dictionary<Node, float>();
-                Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
+        //warning: following algorithm isn't the right one. Replace with A*
+        Dictionary<Node, float> dist = new Dictionary<Node, float>();
+        Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
 
-                List<Node> unvisited = new List<Node>();
+        List<Node> unvisited = new List<Node>();
 
-                //where you start
-                Node source = graph[
-                                    Entity.GetComponent<Creature>().tileX,
-                                    Entity.GetComponent<Creature>().tileY
-                                    ];
+        //where you start
+        Node source = graph[
+                            creature.GetComponent<Creature>().tileX,
+                            creature.GetComponent<Creature>().tileY
+                           ];
 
-                //where you want to go
-                Node target = graph[
-                                    x,
-                                    y
-                                    ];
+       //where you want to go
+       Node target = graph[
+                           x,
+                           y
+                          ];
 
-                dist[source] = 0;
-                prev[source] = null;
+       dist[source] = 0;
+       prev[source] = null;
 
-                foreach (Node v in graph)
-                {
-                    if (v != source)
-                    {
-                        dist[v] = Mathf.Infinity;
-                        prev[v] = null;
-                    }
-                    unvisited.Add(v);
-                }
+       foreach (Node v in graph)
+       {
+         if (v != source)
+         {
+            dist[v] = Mathf.Infinity;
+            prev[v] = null;
+          }
+          unvisited.Add(v);
+       }
 
                 //while there's still nodes to visit
                 while (unvisited.Count > 0)
@@ -289,9 +289,7 @@ public class TileMap : MonoBehaviour
                 //invert path
                 currentPath.Reverse();
 
-                Entity.GetComponent<Creature>().currentPath = currentPath;
-            }
-        }
+    creature.GetComponent<Creature>().currentPath = currentPath;
         
     }
 }
