@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 public class ButtonControls : NetworkBehaviour
 {
     public GameObject currentCreature;
+    public GameObject target;
 
     //load from the turn manager the current creature
     public void ActivateCreature(GameObject next)
@@ -13,6 +14,11 @@ public class ButtonControls : NetworkBehaviour
         currentCreature = next;
     }
 
+    public void Target(GameObject choice)
+    {
+        target = null;
+        target = choice;
+    }
 
     //if the move button is pressed send the command to the creature
     public void MoveCommand()
@@ -26,6 +32,8 @@ public class ButtonControls : NetworkBehaviour
         currentCreature.GetComponent<Creature>().CmdMoveNextTile();
     }
 
+
+
     //if the end turn button is pressed send the command to the creature
     public void EndCommand()
     {
@@ -36,6 +44,20 @@ public class ButtonControls : NetworkBehaviour
         }
         Debug.Log("END TURN COMMAND INITIATED");
         currentCreature.GetComponent<Creature>().EndTurn();
+    }
+
+    public void AttackCommand()
+    {
+        if (currentCreature == null)
+        {
+            Debug.Log("No one here to command");
+            return;
+        }
+        if (target == null)
+        {
+            Debug.Log("Select a target");
+            return;
+        }
     }
 
 

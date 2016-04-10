@@ -11,7 +11,7 @@ struct State
 
 public class TurnManagement : NetworkBehaviour
 {
-    int c;
+    public int c;
 
     public bool begin;
     public bool turnrotationinprogress = false;
@@ -20,21 +20,25 @@ public class TurnManagement : NetworkBehaviour
     public GameObject[] Combatants;
     public GameObject[] InitiativeList;
 
-    public GameObject ButtonControls;
-    public GameObject Map;
+    //public GameObject ButtonControls;
+    //public GameObject Map;
     public GameObject NowPlaying;
+
+    public GameObject localmanager;
 
 
 
     [SyncVar]
     State Turnstate;
 
+    //----------------------------------------------------------------------------------------
     //at the start initialise the state of the turnmanager
+    //keep in master
     void Awake()
     {
         InitState();
     }
-
+    //keep in master
     [Server]
     void InitState()
     {
@@ -49,36 +53,42 @@ public class TurnManagement : NetworkBehaviour
 
 
     // Use this for initialization
+    //keep in master
     void Start()
     {
         c = 0;
         begin = false;
+        gameover = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (begin)
+        if (!gameover)
         {
-            BeginTurnTracking();
-            begin = false;
-        }
+            if (begin && isServer)
+            {
+                BeginTurnTracking();
+                begin = false;
+            }
 
-        if (turnrotationinprogress)
-        {
-            TurnRotation();
-        }
+            if (turnrotationinprogress)
+            {
+                TurnRotation();
+            }
 
-        UpdateOnServer();
+            UpdateOnServer();
+        }
     }
 
-
+    //keep in master
     public void StartTheGame()
     {
         begin = true;
     }
 
     //at the start compile a list of all creatures capable of taking turns
+    //keep in master
     void BeginTurnTracking()
     {
         Debug.Log("Game Start called. Detecting creatures capable of fighting");
@@ -99,17 +109,22 @@ public class TurnManagement : NetworkBehaviour
         else
         {
             Initiative();
+
+            
         }
         
     }
 
     //roll initiative for all creatures in the list, then sort it
+    //keep in master
     void Initiative()
     {
         //do an initiative order
 
         InitiativeList = Combatants;
 
+
+        //execute all begin commands
         turnrotationinprogress = true;
         CmdBegin(turnrotationinprogress, InitiativeList);
     }
@@ -124,51 +139,83 @@ public class TurnManagement : NetworkBehaviour
         else
         {
             NowPlaying = InitiativeList[c];
-            CmdTurn(NowPlaying);
+
+            //CmdTurn(NowPlaying);
+            localmanager.GetComponent<LocalTurn>().begin(NowPlaying);
+
+
+            //if one master manager detects a turn has ended, increment
+
+            //GameObject[] managers = null;
+            //managers = GameObject.FindGameObjectsWithTag("LocalManager");
+            //foreach(GameObject Entity in managers)
+            //{
+            //    Debug.Log("Manager found");
+            //}
+
+            bool check = localmanager.GetComponent<LocalTurn>().increment;
+            if (check)
+            {
+                Debug.Log("Message");
+                c++;
+                if (c >= InitiativeList.Length)
+                {
+                    c = 0;
+                }
+
+                CmdIncrementCount(c);
+                localmanager.GetComponent<LocalTurn>().increment = false;
+            }
         }
     }
 
-    //Find a way to run this on everyone's client
-    void CmdTurn(GameObject current)
-    {
-        //check if they've ticked the flag to end their turn
-        //if they have go onto the next guy, but make sure to untick finished so it doesn't skip their turn forever
-        if (current.GetComponent<Creature>().TurnFinished == false)
-        {
+    //---------------------------------------------------------------------------------------------------------------
+
+    ////Find a way to run this on everyone's client
+    //void CmdTurn(GameObject current)
+    //{
+    //    //check if they've ticked the flag to end their turn
+    //    //if they have go onto the next guy, but make sure to untick finished so it doesn't skip their turn forever
+    //    if (current.GetComponent<Creature>().TurnFinished == false)
+    //    {
             
 
-            //set the button controls to them
-            ButtonControls.GetComponent<ButtonControls>().ActivateCreature(current);
-            Map.GetComponent<TileMap>().LoadInCreature(current);
+    //        //set the button controls to them
+    //        ButtonControls.GetComponent<ButtonControls>().ActivateCreature(current);
+    //        Map.GetComponent<TileMap>().LoadInCreature(current);
 
-            //change flags
-            current.GetComponent<Creature>().MyTurn = true;
-            current.GetComponent<Creature>().TurnFinished = false;
+    //        //change flags
+    //        current.GetComponent<Creature>().MyTurn = true;
+    //        current.GetComponent<Creature>().TurnFinished = false;
 
-        }
+    //    }
 
-        else
-        {
-            c++;
-            current.GetComponent<Creature>().TurnFinished = false;
+    //    else
+    //    {
+            
+    //        current.GetComponent<Creature>().TurnFinished = false;
 
-            //this line here is just to make certain MyTurn is unticked
-            current.GetComponent<Creature>().MyTurn = false;
+    //        //this line here is just to make certain MyTurn is unticked
+    //        current.GetComponent<Creature>().MyTurn = false;
 
-            if (c >= InitiativeList.Length)
-            {
-                c = 0;
-            }
+    //        //edit flags and increment the count
+    //        c++;
+    //        if (c >= InitiativeList.Length)
+    //        {
+    //            c = 0;
+    //        }
 
-            CmdIncrementCount(c);
-        }
+    //        CmdIncrementCount(c);
+            
+    //    }
 
-    }
+    //}
 
 
-
+    //----------------------------------------------------------------------------------------------------------
 
     //server commands
+    //keep these on master
     [Command]
     void CmdIncrementCount(int x)
     {
@@ -186,6 +233,7 @@ public class TurnManagement : NetworkBehaviour
         };
     }
 
+    //command to begin on all turn managers
     [Command]
     void CmdBegin(bool turn, GameObject[] list)
     {

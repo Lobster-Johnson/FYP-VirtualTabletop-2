@@ -16,9 +16,9 @@ public class CameraControls : MonoBehaviour
     public float movesensitivityX = 1.0f;
     public float movesensitivityY = 1.0f;
 
-    //selection ray
-    Ray ray;
-    RaycastHit hit;
+    ////selection ray
+    //Ray ray;
+    //RaycastHit hit;
 
     // Use this for initialization
     void Start()
@@ -54,12 +54,12 @@ public class CameraControls : MonoBehaviour
         //if the user is touching the screen
         if (Input.touchCount > 0)
         {
-            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-                //Debug.Log("Selected " + hit.transform.gameObject.name);
+            //ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            //if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            //{
+            //    //Debug.Log("Selected " + hit.transform.gameObject.name);
 
-            }
+            //}
             if (Input.GetTouch(0).phase == TouchPhase.Began)
             {
                 //Debug.Log("Touch Began");

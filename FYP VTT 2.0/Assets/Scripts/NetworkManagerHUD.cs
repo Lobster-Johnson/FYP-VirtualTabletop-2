@@ -19,6 +19,9 @@ namespace UnityEngine.Networking
 
         // Runtime variable
         bool showServer = false;
+        public string playername;
+
+        bool lanenabled = false;
 
         void Awake()
         {
@@ -29,7 +32,7 @@ namespace UnityEngine.Networking
         {
             if (!showGUI)
                 return;
-
+            //get rid of these, keyboard controls aren't needed
             if (!NetworkClient.active && !NetworkServer.active && manager.matchMaker == null)
             {
                 if (Input.GetKeyDown(KeyCode.S))
@@ -67,9 +70,53 @@ namespace UnityEngine.Networking
             float buttonLength = 400;
             float buttonHeight = 25;
 
+            if (!NetworkClient.active && !NetworkServer.active )
+            {
+                //Enter the player name
+                GUI.Label(new Rect(xpos, ypos, 200, buttonHeight), "Player Name");
+                playername = GUI.TextField(new Rect(xpos + 200, ypos, 100, 20), playername);
+                ypos += spacing;
+            }
+
             if (!NetworkClient.active &&
                 !NetworkServer.active &&
-                manager.matchMaker == null)
+                manager.matchMaker == null &&
+                lanenabled == false)
+            {
+                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Play via LAN"))
+                {
+                    enableLan();
+                }
+                ypos += spacing;
+                //if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "LAN Host(H)"))
+                //{
+                //    manager.StartHost();
+                //}
+                //ypos += spacing;
+
+                //if (GUI.Button(new Rect(xpos, ypos, (buttonLength * 0.5f), buttonHeight), "LAN Client(C)"))
+                //{
+                //    manager.StartClient();
+                //}
+                //manager.networkAddress = GUI.TextField(new Rect(xpos + 200, ypos, (buttonLength * 0.5f), buttonHeight), manager.networkAddress);
+                //ypos += spacing;
+
+                //if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "LAN Server Only(S)"))
+                //{
+                //    manager.StartServer();
+                //}
+                //ypos += spacing;
+                //if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Disable LAN"))
+                //{
+                //    lanenabled = false;
+                //}
+                //ypos += spacing;
+            }
+
+            if (!NetworkClient.active &&
+                !NetworkServer.active &&
+                manager.matchMaker == null &&
+                lanenabled == true)
             {
                 if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "LAN Host(H)"))
                 {
@@ -81,12 +128,18 @@ namespace UnityEngine.Networking
                 {
                     manager.StartClient();
                 }
-                manager.networkAddress = GUI.TextField(new Rect(xpos + 200, ypos, (buttonLength * 0.5f), buttonHeight), manager.networkAddress);
+                manager.networkAddress = GUI.TextField(new Rect(xpos + (buttonLength * 0.5f), ypos, (buttonLength * 0.5f), buttonHeight), manager.networkAddress);
                 ypos += spacing;
 
-                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "LAN Server Only(S)"))
+                //if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "LAN Server Only(S)"))
+                //{
+                //    manager.StartServer();
+                //}
+                //ypos += spacing;
+
+                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Disable LAN"))
                 {
-                    manager.StartServer();
+                    disableLan();
                 }
                 ypos += spacing;
             }
@@ -106,9 +159,11 @@ namespace UnityEngine.Networking
                 }
             }
 
+            //if the client is active but not ready
             if (NetworkClient.active && !ClientScene.ready)
             {
-                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Client Ready"))
+                //password code should go here
+                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Client Ready, Connect to host"))
                 {
                     ClientScene.Ready(manager.client.connection);
 
@@ -123,20 +178,22 @@ namespace UnityEngine.Networking
             //if either the client or the server are active
             if (NetworkServer.active || NetworkClient.active)
             {
-                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Stop (X)"))
+                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Disconnect"))
                 {
                     manager.StopHost();
                 }
                 ypos += spacing;
             }
 
-            if (!NetworkServer.active && !NetworkClient.active)
+
+            //if neither the server not the client are active, but matchmaker is on
+            if (!NetworkServer.active && !NetworkClient.active && lanenabled == false)
             {
                 ypos += 10;
 
                 if (manager.matchMaker == null)
                 {
-                    if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Enable Match Maker (M)"))
+                    if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Play via Internet"))
                     {
                         manager.StartMatchMaker();
                     }
@@ -157,7 +214,6 @@ namespace UnityEngine.Networking
                             GUI.Label(new Rect(xpos, ypos, 200, buttonHeight), "Room Name:");
                             manager.matchName = GUI.TextField(new Rect(xpos + 200, ypos, 100, 20), manager.matchName);
                             ypos += spacing;
-
                             ypos += 10;
 
                             if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Find Internet Match"))
@@ -221,6 +277,16 @@ namespace UnityEngine.Networking
             }
             //GUI.matrix = Matrix4x4.TRS(Vector3(0, 0, 0), Quaternion.identity, Vector3(rx, ry, 1));
         }
+        void enableLan()
+        {
+            lanenabled = true;
+        }
+
+        void disableLan()
+        {
+            lanenabled = false;
+        }
+
     }
 };
 #endif //ENABLE_UNET
