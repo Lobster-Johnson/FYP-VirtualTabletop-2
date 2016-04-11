@@ -14,28 +14,22 @@ public class LocalTurn : NetworkBehaviour
     public GameObject ButtonControls;
     public GameObject Map;
     public GameObject NowPlaying;
+    public GameObject MasterManager;
+
+    [SyncVar]
+    LState turn;
 
     public bool increment;
+
+    bool result;
     bool gameover;
+    
 
-    //[SyncVar]
-    //LState turnstate;
-
-
-    //void Awake()
-    //{
-    //    InitState();
-    //}
-
-    //[Server]
-    //void InitState()
-    //{
-    //    turnstate = new LState
-    //    {
-    //        Increment = increment
-    //    };
-    //}
-
+    void Start()
+    {
+        GameObject[] managers = GameObject.FindGameObjectsWithTag("MainManager");
+        MasterManager = managers[0];
+    }
 
     //called every frame
     void Update()
@@ -47,11 +41,13 @@ public class LocalTurn : NetworkBehaviour
                 Turn(NowPlaying);
             }
         }
-        //UpdateOnServer();
+        
     }
 
     public void Turn(GameObject current)
     {
+        increment = false;
+        result = false;
         //check if they've ticked the flag to end their turn
         //if they have go onto the next guy, but make sure to untick finished so it doesn't skip their turn forever
         if (current.GetComponent<Creature>().TurnFinished == false)
@@ -71,9 +67,12 @@ public class LocalTurn : NetworkBehaviour
 
             //this line here is just to make certain MyTurn is unticked
             current.GetComponent<Creature>().MyTurn = false;
+
             increment = true;
+
             
         }
+        
     }
 
     public void begin(GameObject np)
@@ -94,19 +93,8 @@ public class LocalTurn : NetworkBehaviour
         NowPlaying = np;
     }
 
-    //public void inc()
-    //{
-    //    Rpcinc();
-    //}
+    
 
-    //[ClientRpc]
-    //void Rpcinc()
-    //{
-    //    increment = true;
-    //}
+    
 
-    //void UpdateOnServer()
-    //{
-    //    increment = turnstate.Increment;
-    //}
 }

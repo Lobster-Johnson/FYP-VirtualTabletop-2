@@ -11,14 +11,17 @@ struct State
 
 public class TurnManagement : NetworkBehaviour
 {
+    
     public int c;
-
+    public int z;
     public bool begin;
     public bool turnrotationinprogress = false;
     public bool gameover = false;
+    public bool turncheck;
 
     public GameObject[] Combatants;
     public GameObject[] InitiativeList;
+    public GameObject[] turnmanagers;
 
     //public GameObject ButtonControls;
     //public GameObject Map;
@@ -64,6 +67,7 @@ public class TurnManagement : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+       
         if (!gameover)
         {
             if (begin && isServer)
@@ -139,35 +143,40 @@ public class TurnManagement : NetworkBehaviour
         else
         {
             NowPlaying = InitiativeList[c];
-
-            //CmdTurn(NowPlaying);
-            localmanager.GetComponent<LocalTurn>().begin(NowPlaying);
-
-
-            //if one master manager detects a turn has ended, increment
-
-            //GameObject[] managers = null;
-            //managers = GameObject.FindGameObjectsWithTag("LocalManager");
-            //foreach(GameObject Entity in managers)
-            //{
-            //    Debug.Log("Manager found");
-            //}
-
-            bool check = localmanager.GetComponent<LocalTurn>().increment;
-            if (check)
+            if (NowPlaying != null)
             {
-                Debug.Log("Message");
-                c++;
-                if (c >= InitiativeList.Length)
+                //get the connection id of the player and give them authority over this
+                //z = NowPlaying.GetComponent<NetworkIdentity>().connectionToClient.connectionId;
+
+                if(this.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient))
                 {
-                    c = 0;
+                    //Debug.Log("Successful");
                 }
 
-                CmdIncrementCount(c);
-                localmanager.GetComponent<LocalTurn>().increment = false;
+                turnmanagers = GameObject.FindGameObjectsWithTag("LocalManager");
+                //CmdTurn(NowPlaying);
+                localmanager.GetComponent<LocalTurn>().begin(NowPlaying);
+
+                bool check = false;
+                check = localmanager.GetComponent<LocalTurn>().increment;
+
+                if (check)
+                {
+                    Debug.Log("Message");
+                    c++;
+                    if (c >= InitiativeList.Length)
+                    {
+                        c = 0;
+                    }
+
+                    CmdIncrementCount(c);
+                    localmanager.GetComponent<LocalTurn>().increment = false;
+                    this.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient);
+                }
             }
         }
     }
+    
 
     //---------------------------------------------------------------------------------------------------------------
 
@@ -234,7 +243,7 @@ public class TurnManagement : NetworkBehaviour
     }
 
     //command to begin on all turn managers
-    [Command]
+    [Server]
     void CmdBegin(bool turn, GameObject[] list)
     {
         Debug.Log("Sending game start command to server");
