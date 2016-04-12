@@ -45,6 +45,13 @@ public class Creature : NetworkBehaviour
         };
     }
 
+    public void forcespawn(int x, int y)
+    {
+        tileX = x;
+        tileY = y;
+        NewServerPos(tileX, tileY);
+    }
+
     // Use this for initialization
     void Start ()
     {
@@ -162,6 +169,13 @@ public class Creature : NetworkBehaviour
         serverState = Move(serverState, x, y);
     }
 
+    [Server]
+    void NewServerPos(int x, int y)
+    {
+        Debug.Log("Requesting update on server");
+        serverState = Move(serverState, x, y);
+    }
+
     CreatureState Move(CreatureState previous, int x, int y)
     {
         return new CreatureState
@@ -174,6 +188,7 @@ public class Creature : NetworkBehaviour
     void UpdateOnServer()
     {
         transform.position = serverState.stilex * Vector3.right + serverState.stiley * Vector3.up;
+        transform.position = new Vector3(transform.position.x, transform.position.y, -0.5f);
         //Debug.Log("Server updated, Co-ordinates: " + serverState.stilex + " " + serverState.stiley);
     }
 

@@ -3,20 +3,20 @@ using System.Collections;
 
 public class DiceRoller : MonoBehaviour {
 
-	public int DiceRoll(int modifier)
+    //dice rolls for initiative, to hit, etc
+    public int DiceRoll(int modifier)
     {
-        int result = 0;
 
+        int result = Random.Range(1, 21);
+        result += modifier;
         return result;
     }
 
-    public void damageRoll()
+    //damage rolls
+    public int damageRoll(int modifier)
     {
-
-    }
-
-    public void damage()
-    {
-
+        int result = Random.Range(1, 11);
+        result += modifier;
+        return result;
     }
 }

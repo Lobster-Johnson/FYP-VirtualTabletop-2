@@ -1,23 +1,25 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Networking;
 
 
 
-public class Enemies : MonoBehaviour
+public class Enemies : NetworkBehaviour
 {
 
     public int number;
-    public GameObject[] EnemyCreatures;
+    public GameObject EnemyCreatures;
 
     // Use this for initialization
     void Start ()
     {
         //generate enemy data
-        GenerateMonsters();
+        GenerateMonsters(3, 5);
+        GenerateMonsters(7, 5);
 
 	}
 
-    void GenerateMonsters()
+    void GenerateMonsters(int x, int y)
     {
         //for(int i = 0; i < number; i++)
         //{
@@ -28,6 +30,9 @@ public class Enemies : MonoBehaviour
         //    cr.tileX = y;
         //    cr.tileY = x;
         //}
+        GameObject enemy = Instantiate(EnemyCreatures);
+        enemy.GetComponent<Creature>().forcespawn(x, y);
+        NetworkServer.Spawn(enemy);
     }
 	
 }

@@ -17,15 +17,21 @@ namespace UnityEngine.Networking
         [SerializeField]
         public int offsetY;
 
+        float W = Screen.width;
+        float H = Screen.height;
+
         // Runtime variable
         bool showServer = false;
         public string playername;
 
         bool lanenabled = false;
+        GUIStyle mainfont = new GUIStyle();
 
         void Awake()
         {
             manager = GetComponent<NetworkManager>();
+            mainfont.fontSize = 40;
+            mainfont.normal.textColor = Color.white;
         }
 
         void Update()
@@ -62,20 +68,25 @@ namespace UnityEngine.Networking
             if (!showGUI)
                 return;
 
-            int xpos = 10 + offsetX;
-            int ypos = 40 + offsetY;
-            int spacing = 24;
+            int xpos = (int)(W * 0.35f);
+            int ypos = (int)(H * 0.1f);
+            int spacing = (int)(H * 0.075f);
 
             //get these to scale
-            float buttonLength = 400;
-            float buttonHeight = 25;
+            float buttonLength = W * 0.5f;
+            float buttonHeight = H * 0.075f;
 
             if (!NetworkClient.active && !NetworkServer.active )
             {
-                //Enter the player name
-                GUI.Label(new Rect(xpos, ypos, 200, buttonHeight), "Player Name");
-                playername = GUI.TextField(new Rect(xpos + 200, ypos, 100, 20), playername);
+                //put the title, student number etc here
+                GUI.Label(new Rect(W * 0.5f, ypos, buttonLength * 0.5f, buttonHeight), "Multiplayer Virtual Tabletop", mainfont);
                 ypos += spacing;
+                GUI.Label(new Rect(W * 0.5f, ypos, buttonLength * 0.5f, buttonHeight), "DT228/4 C12474932", mainfont);
+                ypos += spacing;
+                //Enter the player name
+                //GUI.Label(new Rect(xpos, ypos, buttonLength * 0.5f, buttonHeight), "Player Name");
+                //playername = GUI.TextField(new Rect(xpos + (buttonLength * 0.5f), ypos, buttonLength * 0.5f, buttonHeight*0.5f), playername);
+                //ypos += spacing;
             }
 
             if (!NetworkClient.active &&
@@ -149,12 +160,12 @@ namespace UnityEngine.Networking
             {
                 if (NetworkServer.active)
                 {
-                    GUI.Label(new Rect(xpos, ypos, buttonLength, buttonHeight), "Server: port=" + manager.networkPort);
+                    GUI.Label(new Rect(0, ypos, buttonLength, buttonHeight), "Server: port=" + manager.networkPort);
                     ypos += spacing;
                 }
                 if (NetworkClient.active)
                 {
-                    GUI.Label(new Rect(xpos, ypos, buttonLength, buttonHeight), "Client: address=" + manager.networkAddress + " port=" + manager.networkPort);
+                    GUI.Label(new Rect(0, ypos, buttonLength, buttonHeight), "Client: address=" + manager.networkAddress + " port=" + manager.networkPort);
                     ypos += spacing;
                 }
             }
@@ -175,15 +186,15 @@ namespace UnityEngine.Networking
                 ypos += spacing;
             }
 
-            //if either the client or the server are active
-            if (NetworkServer.active || NetworkClient.active)
-            {
-                if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Disconnect"))
-                {
-                    manager.StopHost();
-                }
-                ypos += spacing;
-            }
+            ////if either the client or the server are active
+            //if (NetworkServer.active || NetworkClient.active)
+            //{
+            //    if (GUI.Button(new Rect(xpos, ypos, buttonLength, buttonHeight), "Disconnect"))
+            //    {
+            //        manager.StopHost();
+            //    }
+            //    ypos += spacing;
+            //}
 
 
             //if neither the server not the client are active, but matchmaker is on
@@ -211,8 +222,8 @@ namespace UnityEngine.Networking
                             }
                             ypos += spacing;
 
-                            GUI.Label(new Rect(xpos, ypos, 200, buttonHeight), "Room Name:");
-                            manager.matchName = GUI.TextField(new Rect(xpos + 200, ypos, 100, 20), manager.matchName);
+                            GUI.Label(new Rect(xpos, ypos, buttonLength * 0.5f, buttonHeight), "Room Name:");
+                            manager.matchName = GUI.TextField(new Rect(xpos + buttonLength * 0.5f, ypos, buttonLength * 0.5f, buttonHeight), manager.matchName);
                             ypos += spacing;
                             ypos += 10;
 
@@ -286,6 +297,15 @@ namespace UnityEngine.Networking
         {
             lanenabled = false;
         }
+
+        public void disconnect()
+        {
+            if (NetworkServer.active || NetworkClient.active)
+            {
+                manager.StopHost();
+            }
+       }
+
 
     }
 };

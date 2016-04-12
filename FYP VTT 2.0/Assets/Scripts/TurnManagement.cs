@@ -11,7 +11,7 @@ struct State
 
 public class TurnManagement : NetworkBehaviour
 {
-    
+
     public int c;
     public int z;
     public bool begin;
@@ -40,6 +40,9 @@ public class TurnManagement : NetworkBehaviour
     void Awake()
     {
         InitState();
+        Combatants = null;
+        InitiativeList = null;
+        turnmanagers = null;
     }
     //keep in master
     [Server]
@@ -67,7 +70,7 @@ public class TurnManagement : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+
         if (!gameover)
         {
             if (begin && isServer)
@@ -114,9 +117,9 @@ public class TurnManagement : NetworkBehaviour
         {
             Initiative();
 
-            
+
         }
-        
+
     }
 
     //roll initiative for all creatures in the list, then sort it
@@ -124,6 +127,10 @@ public class TurnManagement : NetworkBehaviour
     void Initiative()
     {
         //do an initiative order
+        foreach (GameObject Creature in Combatants)
+        {
+
+        }
 
         InitiativeList = Combatants;
 
@@ -146,9 +153,8 @@ public class TurnManagement : NetworkBehaviour
             if (NowPlaying != null)
             {
                 //get the connection id of the player and give them authority over this
-                //z = NowPlaying.GetComponent<NetworkIdentity>().connectionToClient.connectionId;
 
-                if(this.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient))
+                if (this.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient))
                 {
                     //Debug.Log("Successful");
                 }
@@ -171,55 +177,16 @@ public class TurnManagement : NetworkBehaviour
 
                     CmdIncrementCount(c);
                     localmanager.GetComponent<LocalTurn>().increment = false;
+
                     this.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient);
+
                 }
             }
         }
     }
-    
+
 
     //---------------------------------------------------------------------------------------------------------------
-
-    ////Find a way to run this on everyone's client
-    //void CmdTurn(GameObject current)
-    //{
-    //    //check if they've ticked the flag to end their turn
-    //    //if they have go onto the next guy, but make sure to untick finished so it doesn't skip their turn forever
-    //    if (current.GetComponent<Creature>().TurnFinished == false)
-    //    {
-            
-
-    //        //set the button controls to them
-    //        ButtonControls.GetComponent<ButtonControls>().ActivateCreature(current);
-    //        Map.GetComponent<TileMap>().LoadInCreature(current);
-
-    //        //change flags
-    //        current.GetComponent<Creature>().MyTurn = true;
-    //        current.GetComponent<Creature>().TurnFinished = false;
-
-    //    }
-
-    //    else
-    //    {
-            
-    //        current.GetComponent<Creature>().TurnFinished = false;
-
-    //        //this line here is just to make certain MyTurn is unticked
-    //        current.GetComponent<Creature>().MyTurn = false;
-
-    //        //edit flags and increment the count
-    //        c++;
-    //        if (c >= InitiativeList.Length)
-    //        {
-    //            c = 0;
-    //        }
-
-    //        CmdIncrementCount(c);
-            
-    //    }
-
-    //}
-
 
     //----------------------------------------------------------------------------------------------------------
 
