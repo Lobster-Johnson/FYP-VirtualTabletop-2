@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Networking;
 
-public class Stats : MonoBehaviour
+struct health
+{
+    public int maxhp;
+    public int currhp;
+}
+public class Stats : NetworkBehaviour
 {
     public string name;
     public int maxhealth;
@@ -10,16 +16,85 @@ public class Stats : MonoBehaviour
     public int armor;
     public int str;
     public int initiative;
+    public int damageDice;
 
-	// Use this for initialization
-	void Start ()
+    [SyncVar]
+    health life;
+
+    void Awake()
     {
-	
+        InitState();
+    }
+    [Server]
+    void InitState()
+    {
+        //if (!isServer)
+        //{
+        //    return;
+        //}
+
+        life = new health
+        {
+            maxhp = maxhealth,
+            currhp = currenthealth
+        };
+    }
+
+    
+    // Use this for initialization
+    void Start ()
+    {
+	    
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-	
+	    if(currenthealth <=0 )
+        {
+            CmdDie();
+        }
 	}
+
+    //probably replace this with "change health"
+    public void TakeDamage(int x)
+    {
+        Debug.Log("Took " + x + " damage!");
+        Cmdserverdamage(x);
+    }
+
+    [Command]
+    public void Cmdserverdamage(int x)
+    {
+        life = SDamage(life, x);
+    }
+
+
+
+    health SDamage(health previous, int x)
+    {
+        return new health
+        {
+            maxhp = previous.maxhp,
+            currhp = previous.maxhp - x
+        };
+    }
+
+    [Command]
+    public void CmdDie()
+    {
+        //Destroy(this.gameObject);
+        NetworkServer.Destroy(this.gameObject);
+    }
+
+    [Server]
+    public void Die()
+    {
+        Destroy(this.gameObject);
+    }
+
+    public void updatehealth()
+    {
+        currenthealth = life.currhp;
+    }
 }

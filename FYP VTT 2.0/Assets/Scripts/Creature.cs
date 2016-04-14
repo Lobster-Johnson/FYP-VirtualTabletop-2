@@ -41,6 +41,11 @@ public class Creature : NetworkBehaviour
     [Server]
     void InitState()
     {
+        //if (!isServer)
+        //{
+        //    return;
+        //}
+
         serverState = new CreatureState
         {
             stilex = tileX,
@@ -200,6 +205,7 @@ public class Creature : NetworkBehaviour
         transform.position = serverState.stilex * Vector3.right + serverState.stiley * Vector3.up;
         transform.position = new Vector3(transform.position.x, transform.position.y, -0.5f);
         //Debug.Log("Server updated, Co-ordinates: " + serverState.stilex + " " + serverState.stiley);
+        this.gameObject.GetComponent<Stats>().updatehealth();
     }
 
     

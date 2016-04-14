@@ -9,13 +9,14 @@ public class Statbox : NetworkBehaviour
 
     private Text myGuiText;
 
-    string name = "none selected";
+    string name;
     int maxhealth = 0;
     int currenthealth = 0;
     int maxspeed = 0;
     int armor = 0;
     int str = 0;
     int initiative = 0;
+    string normal = "No target";
 
     public GameObject target;
 
@@ -36,12 +37,20 @@ public class Statbox : NetworkBehaviour
 
     public string updateMessage()
     {
-        string message = 
-            "Name: " + name + "\n" +
-            "Health: " + currenthealth + "/" + maxhealth + "\n"
-             + "Speed: " + maxspeed + "\n"
-             + "Initiative: " + initiative + "\n"
-             + "Strength: " + str;
+        string message;
+        //if (target == null)
+        //{
+        //    message = normal;
+        //}
+        //else
+        //{
+            message =
+                "Name: " + name + "\n" +
+                "Health: " + currenthealth + "/" + maxhealth + "\n"
+                 + "Speed: " + maxspeed + "\n"
+                 + "Initiative: " + initiative + "\n"
+                 + "Strength: " + str;
+        //}
         return message;
     }
 

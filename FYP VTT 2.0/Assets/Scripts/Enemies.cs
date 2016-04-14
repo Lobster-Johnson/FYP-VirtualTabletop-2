@@ -16,8 +16,10 @@ public class Enemies : NetworkBehaviour
         //generate enemy data
         GenerateMonsters(3, 5);
         GenerateMonsters(7, 4);
+        GenerateMonsters(8, 1);
+        GenerateMonsters(1, 8);
 
-	}
+    }
 
     void GenerateMonsters(int x, int y)
     {

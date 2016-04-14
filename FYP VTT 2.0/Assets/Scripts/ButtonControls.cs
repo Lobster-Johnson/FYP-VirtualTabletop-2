@@ -11,8 +11,8 @@ public class ButtonControls : NetworkBehaviour
 
     public void start()
     {
-        GameObject[] Msgs = GameObject.FindGameObjectsWithTag("Messages");
-        msgbox = Msgs[0];
+        //GameObject[] Msgs = GameObject.FindGameObjectsWithTag("Messages");
+        //msgbox = Msgs[0];
 
     }
 
@@ -24,6 +24,7 @@ public class ButtonControls : NetworkBehaviour
         currentCreature = next;
     }
 
+    //on selection load in a target
     public void Target(GameObject choice)
     {
         target = null;
@@ -99,12 +100,49 @@ public class ButtonControls : NetworkBehaviour
         else
         {
             Debug.Log("Within Range");
-            // msgbox.GetComponent<MessageBox>().NewMessage("Attack");
-            //int attack = currentCreature.GetComponent<Stats>().str;
-            //int result = dice.GetComponent<DiceRoller>().DiceRoll(attack);
-            //Debug.Log(result);
+            Debug.Log("Attacking " + target.GetComponent<Stats>().name + " With " + currentCreature.GetComponent<Stats>().name);
+
+            //this string tracks all that happens
+            string outcome = "";
+
+            outcome += currentCreature.GetComponent<Stats>().name + " attacks " + target.GetComponent<Stats>().name + ", ";
+
+            //roll to hit
+            int attack = currentCreature.GetComponent<Stats>().str;
+            int result = dice.GetComponent<DiceRoller>().DiceRoll(attack);
+            //message of result
+            Debug.Log(result);
+
+            //check hit
+            //if you roll their armor or higher, you hit
+            //otherwise you miss
+            if (result >= target.GetComponent<Stats>().armor)
+            {
+                Debug.Log("Hit");
+                //send message of hit
+                outcome += "hitting and dealing ";
+
+                //roll damage
+                int mod = currentCreature.GetComponent<Stats>().str;
+                int weapon = currentCreature.GetComponent<Stats>().damageDice;
+                int damage = dice.GetComponent<DiceRoller>().damageRoll(mod, weapon);
+
+                //resolve damage
+                outcome += damage + " damage!";
+                Debug.Log(damage);
+                target.GetComponent<Stats>().TakeDamage(damage);
+            }
+            else
+            {
+                Debug.Log("Miss");
+                //no further effects
+                outcome += "but misses.";
+            }
 
 
+
+
+            msgbox.GetComponent<MessageBox>().NewMessage(outcome);
 
         }
     }

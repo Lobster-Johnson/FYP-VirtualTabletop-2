@@ -45,10 +45,16 @@ public class TurnManagement : NetworkBehaviour
         InitiativeList = null;
         turnmanagers = null;
     }
+
     //keep in master
     [Server]
     void InitState()
     {
+        //if (!isServer)
+        //{
+        //    return;
+        //}
+
         Turnstate = new State
         {
             turnrote = turnrotationinprogress,
@@ -139,7 +145,7 @@ public class TurnManagement : NetworkBehaviour
         //do an initiative order
         foreach (GameObject Creature in Combatants)
         {
-
+            Debug.Log(Creature.GetComponent<Stats>().initiative);
         }
 
         InitiativeList = Combatants;
@@ -149,6 +155,7 @@ public class TurnManagement : NetworkBehaviour
         turnrotationinprogress = true;
 
         Messenger.GetComponent<MessageBox>().NewMessage("Game has started");
+        Messenger.GetComponent<MessageBox>().NewMessage(InitiativeList[0].GetComponent<Stats>().name + " takes the first turn");
 
         CmdBegin(turnrotationinprogress, InitiativeList);
     }
@@ -166,10 +173,12 @@ public class TurnManagement : NetworkBehaviour
             if (NowPlaying != null)
             {
                 //get the connection id of the player and give them authority over this
-
-                if (this.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient))
+                if (isServer)
                 {
-                    //Debug.Log("Successful");
+                    if (this.gameObject.GetComponent<NetworkIdentity>().AssignClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient))
+                    {
+                        //Debug.Log("Successful");
+                    }
                 }
 
                 turnmanagers = GameObject.FindGameObjectsWithTag("LocalManager");
@@ -194,9 +203,10 @@ public class TurnManagement : NetworkBehaviour
 
                     CmdIncrementCount(c);
                     localmanager.GetComponent<LocalTurn>().increment = false;
-
-                    this.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient);
-
+                    if (isServer)
+                    {
+                        this.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient);
+                    }
                     //let the next guy know it's their turn
                     string name2 = InitiativeList[c].GetComponent<Stats>().name;
                     Messenger.GetComponent<MessageBox>().NewMessage(name2 + "'s turn");

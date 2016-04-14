@@ -13,9 +13,10 @@ public class DiceRoller : MonoBehaviour {
     }
 
     //damage rolls
-    public int damageRoll(int modifier)
+    //takes in the modifier and damage dice
+    public int damageRoll(int modifier, int dice)
     {
-        int result = Random.Range(1, 11);
+        int result = Random.Range(1, (dice + 1));
         result += modifier;
         return result;
     }
