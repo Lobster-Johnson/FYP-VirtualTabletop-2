@@ -15,7 +15,7 @@ public class Enemies : NetworkBehaviour
     {
         //generate enemy data
         GenerateMonsters(3, 5);
-        GenerateMonsters(7, 5);
+        GenerateMonsters(7, 4);
 
 	}
 

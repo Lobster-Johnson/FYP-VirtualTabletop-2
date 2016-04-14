@@ -29,6 +29,7 @@ public class TurnManagement : NetworkBehaviour
 
     public GameObject localmanager;
 
+    public GameObject Messenger;
 
 
     [SyncVar]
@@ -65,6 +66,10 @@ public class TurnManagement : NetworkBehaviour
         c = 0;
         begin = false;
         gameover = false;
+
+        //get the message manager
+        GameObject[] Msgs = GameObject.FindGameObjectsWithTag("Messages");
+        Messenger = Msgs[0];
     }
 
     // Update is called once per frame
@@ -85,6 +90,11 @@ public class TurnManagement : NetworkBehaviour
             }
 
             UpdateOnServer();
+        }
+
+        if(gameover)
+        {
+            Messenger.GetComponent<MessageBox>().NewMessage("Game Over");
         }
     }
 
@@ -137,6 +147,9 @@ public class TurnManagement : NetworkBehaviour
 
         //execute all begin commands
         turnrotationinprogress = true;
+
+        Messenger.GetComponent<MessageBox>().NewMessage("Game has started");
+
         CmdBegin(turnrotationinprogress, InitiativeList);
     }
 
@@ -166,9 +179,13 @@ public class TurnManagement : NetworkBehaviour
                 bool check = false;
                 check = localmanager.GetComponent<LocalTurn>().increment;
 
+                //if it detects the creature has ended it's turn
                 if (check)
                 {
-                    Debug.Log("Message");
+                    //update message manager
+                    string name = NowPlaying.GetComponent<Stats>().name;
+                    Messenger.GetComponent<MessageBox>().NewMessage(name +  " ended it's turn");
+
                     c++;
                     if (c >= InitiativeList.Length)
                     {
@@ -180,6 +197,9 @@ public class TurnManagement : NetworkBehaviour
 
                     this.gameObject.GetComponent<NetworkIdentity>().RemoveClientAuthority(NowPlaying.GetComponent<NetworkIdentity>().connectionToClient);
 
+                    //let the next guy know it's their turn
+                    string name2 = InitiativeList[c].GetComponent<Stats>().name;
+                    Messenger.GetComponent<MessageBox>().NewMessage(name2 + "'s turn");
                 }
             }
         }

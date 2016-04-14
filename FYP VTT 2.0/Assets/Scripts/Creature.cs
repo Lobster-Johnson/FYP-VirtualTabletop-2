@@ -14,6 +14,9 @@ public class Creature : NetworkBehaviour
     [SyncVar]
     CreatureState serverState;
 
+    [SyncVar]
+    public string pname;
+
     //every creature has a location on the map
     public int tileX;
     public int tileY;
@@ -70,6 +73,13 @@ public class Creature : NetworkBehaviour
         //change it's tile x and y to it's current position in the world
         tileX = (int)transform.position.x;
         tileY = (int)transform.position.y;
+
+        //name
+        if(isLocalPlayer)
+        {
+            pname = "You";
+        }
+
         DebugLine();
         UpdateOnServer();
     }

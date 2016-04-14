@@ -30,9 +30,5 @@ public class MessageBox : NetworkBehaviour
         //Rpcupdate(ongoingmessage);
     }
 
-    //[ClientRpc]
-    //void Rpcupdate(string s)
-    //{
-    //    ongoingmessage = s;
-    //}
+    //sync messages across clients
 }

@@ -11,7 +11,8 @@ public class ButtonControls : NetworkBehaviour
 
     public void start()
     {
-
+        GameObject[] Msgs = GameObject.FindGameObjectsWithTag("Messages");
+        msgbox = Msgs[0];
 
     }
 
