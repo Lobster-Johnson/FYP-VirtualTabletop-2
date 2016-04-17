@@ -9,7 +9,7 @@ public class Statbox : NetworkBehaviour
 
     private Text myGuiText;
 
-    string name;
+    new string name;
     int maxhealth = 0;
     int currenthealth = 0;
     int maxspeed = 0;
@@ -38,19 +38,14 @@ public class Statbox : NetworkBehaviour
     public string updateMessage()
     {
         string message;
-        //if (target == null)
-        //{
-        //    message = normal;
-        //}
-        //else
-        //{
+        
             message =
                 "Name: " + name + "\n" +
                 "Health: " + currenthealth + "/" + maxhealth + "\n"
                  + "Speed: " + maxspeed + "\n"
                  + "Initiative: " + initiative + "\n"
                  + "Strength: " + str;
-        //}
+       
         return message;
     }
 

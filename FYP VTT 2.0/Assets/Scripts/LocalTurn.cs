@@ -21,7 +21,7 @@ public class LocalTurn : NetworkBehaviour
 
     public bool increment;
 
-    bool result;
+    
     bool gameover;
     
 
@@ -47,7 +47,6 @@ public class LocalTurn : NetworkBehaviour
     public void Turn(GameObject current)
     {
         increment = false;
-        result = false;
         //check if they've ticked the flag to end their turn
         //if they have go onto the next guy, but make sure to untick finished so it doesn't skip their turn forever
         if (current.GetComponent<Creature>().TurnFinished == false)

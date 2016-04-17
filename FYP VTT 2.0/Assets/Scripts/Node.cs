@@ -17,6 +17,7 @@ public class Node
         if (n == null)
         {
             //error
+            
         }
 
         return Vector2.Distance(

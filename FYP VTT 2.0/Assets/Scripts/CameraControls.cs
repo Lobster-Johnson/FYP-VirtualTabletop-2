@@ -54,16 +54,8 @@ public class CameraControls : MonoBehaviour
         //if the user is touching the screen
         if (Input.touchCount > 0)
         {
-            //ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            //if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            //{
-            //    //Debug.Log("Selected " + hit.transform.gameObject.name);
-
-            //}
-            if (Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-                //Debug.Log("Touch Began");
-            }
+            
+            //if the user's touch moves
             if (Input.GetTouch(0).phase == TouchPhase.Moved)
             {
                 //Debug.Log("Touch Moved");
@@ -73,10 +65,6 @@ public class CameraControls : MonoBehaviour
                 float positionY = (delta.y * movesensitivityY * Time.deltaTime) * -1;
 
                 transform.position += new Vector3(-positionX, positionY, 0);
-            }
-            if (Input.GetTouch(0).phase == TouchPhase.Ended)
-            {
-                //Debug.Log("Touch Ended");
             }
         }
 

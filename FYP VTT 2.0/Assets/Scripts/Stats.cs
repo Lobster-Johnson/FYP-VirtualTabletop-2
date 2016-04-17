@@ -9,7 +9,7 @@ struct health
 }
 public class Stats : NetworkBehaviour
 {
-    public string name;
+    public new string name;
     public int maxhealth;
     public int currenthealth;
     public int maxspeed;

@@ -46,9 +46,7 @@ public class TileMap : MonoBehaviour
                 tiles[x, y] = 0;
             }
         }
-
-        //hardcoded: Remove
-        //this could cause problems as all I'm doing here is created a new block on top of the old one
+        
         //generate test wall
         tiles[0, 4] = 2;
         tiles[1, 4] = 2;
@@ -202,11 +200,12 @@ public class TileMap : MonoBehaviour
         creature.GetComponent<Creature>().currentPath = null;
 
 
-        //warning: following algorithm isn't the right one. Replace with A*
+        //A*
         Dictionary<Node, float> dist = new Dictionary<Node, float>();
         Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
 
         List<Node> unvisited = new List<Node>();
+        List<Node> removed = new List<Node>();
 
         //where you start
         Node source = graph[
@@ -223,6 +222,7 @@ public class TileMap : MonoBehaviour
        dist[source] = 0;
        prev[source] = null;
 
+        //add all the nodes to the dist
        foreach (Node v in graph)
        {
          if (v != source)
@@ -230,45 +230,72 @@ public class TileMap : MonoBehaviour
             dist[v] = Mathf.Infinity;
             prev[v] = null;
           }
-          unvisited.Add(v);
        }
 
-                //while there's still nodes to visit
-                while (unvisited.Count > 0)
+        //put in the source and all his neighbours
+        unvisited.Add(source);
+        foreach (Node v in source.neighbours)
+        {
+            
+            unvisited.Add(v);
+        }
+
+        //while they're nodes to visit
+        //I am now implementing A*
+        //-------------------------
+        while (unvisited.Count > 0)
+        {
+
+            //get the node with the lowest dist (F) value
+            //if starting off this will be the source
+            Node u = null;
+            foreach (Node PossibleU in unvisited)
+            {
+                //check every unvisited node for the lowest one
+                if (u == null || dist[PossibleU] < dist[u])
                 {
-                    //Node u = unvisited.OrderBy(n => dist[n]).First();
-
-                    Node u = null;
-
-                    foreach (Node PossibleU in unvisited)
-                    {
-                        if (u == null || dist[PossibleU] < dist[u])
-                        {
-                            u = PossibleU;
-                        }
-                    }
-
-                    if (u == target)
-                    {
-                        break;
-                    }
-
-
-                    unvisited.Remove(u);
-
-                    foreach (Node v in u.neighbours)
-                    {
-                        float alt = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
-                        if (alt < dist[v])
-                        {
-                            dist[v] = alt;
-                            prev[v] = u;
-                        }
-                    }
+                    u = PossibleU;
                 }
 
-                //here indicates we have either found the shortest route or there is no route
-                if (prev[target] == null)
+            }
+
+            //is it the destination?
+            if (u == target)
+            {
+                break;
+            }
+
+            //remove u from the options
+            unvisited.Remove(u);
+            removed.Add(u);
+
+            
+
+            foreach (Node v in u.neighbours)
+            {
+                //basically calculate the previous G by going G = F - H
+                float G = dist[u] - u.DistanceTo(target); 
+                float H = v.DistanceTo(target);
+                float cost = CostToEnterTile(u.x, u.y, v.x, v.y);
+                float F = G + cost + H;
+
+                if (F < dist[v])
+                {
+                    dist[v] = F;
+                    prev[v] = u;
+
+                    if(!removed.Contains(v))
+                    {
+                        unvisited.Add(v);
+                    }
+                    
+                }
+            }
+        }
+        //------------------------
+
+        //here indicates we have either found the shortest route or there is no route
+        if (prev[target] == null)
                 {
                     //no route between target and source
                     return;

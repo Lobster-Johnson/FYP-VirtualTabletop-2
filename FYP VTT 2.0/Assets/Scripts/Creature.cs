@@ -149,7 +149,7 @@ public class Creature : NetworkBehaviour
 
                 remainingmovespeed--;
 
-                //now move it on the server too
+                //server update
                 CmdNewServerPos(currentPath[0].x, currentPath[0].y);
 
                 if (currentPath.Count == 1)
